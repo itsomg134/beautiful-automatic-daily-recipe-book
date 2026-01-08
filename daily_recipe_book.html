@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Recipe Book</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4f 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #a7f3d0;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .date {
+            font-size: 1.2em;
+            color: #d1fae5;
+            font-style: italic;
+        }
+
+        .recipe-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #1a4d2e;
+        }
+
+        .recipe-header {
+            border-bottom: 3px solid #34d399;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .recipe-title {
+            font-size: 2em;
+            color: #065f46;
+            margin-bottom: 10px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: #047857;
+            font-size: 0.95em;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #065f46;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ingredients-list, .instructions-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .ingredients-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            border-radius: 5px;
+            color: #065f46;
+        }
+
+        .instructions-list li {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #ecfdf5;
+            border-left: 4px solid #34d399;
+            border-radius: 5px;
+            color: #064e3b;
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .instructions-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #10b981;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .tips {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 10px;
+            color: #78350f;
+            margin-top: 20px;
+        }
+
+        .tips strong {
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍳 Daily Recipe Book 🍳</h1>
+            <div class="date" id="currentDate"></div>
+        </header>
+
+        <div class="recipe-card" id="recipeCard">
+            <div class="recipe-header">
+                <h2 class="recipe-title" id="recipeTitle"></h2>
+                <div class="recipe-meta">
+                    <div class="meta-item">⏱️ <span id="prepTime"></span></div>
+                    <div class="meta-item">🔥 <span id="cookTime"></span></div>
+                    <div class="meta-item">🍽️ <span id="servings"></span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">🥘 Ingredients</h3>
+                <ul class="ingredients-list" id="ingredientsList"></ul>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">👨‍🍳 Instructions</h3>
+                <ol class="instructions-list" id="instructionsList"></ol>
+            </div>
+
+            <div class="tips" id="tips"></div>
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="previousRecipe()">← Previous Day</button>
+            <button onclick="nextRecipe()">Next Day →</button>
+        </div>
+    </div>
+
+    <script>
+        const recipes = [
+            {
+                title: "Classic Vegetable Stir Fry",
+                prepTime: "15 minutes",
+                cookTime: "10 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "2 cups broccoli florets",
+                    "1 red bell pepper, sliced",
+                    "1 cup snap peas",
+                    "2 carrots, julienned",
+                    "3 cloves garlic, minced",
+                    "2 tbsp soy sauce",
+                    "1 tbsp sesame oil",
+                    "1 tsp ginger, grated",
+                    "2 tbsp vegetable oil"
+                ],
+                instructions: [
+                    "Heat vegetable oil in a large wok or pan over high heat.",
+                    "Add garlic and ginger, stir fry for 30 seconds until fragrant.",
+                    "Add carrots and broccoli, cook for 3 minutes while stirring constantly.",
+                    "Add bell pepper and snap peas, continue cooking for 2 minutes.",
+                    "Pour in soy sauce and sesame oil, toss everything together.",
+                    "Cook for another minute until vegetables are tender-crisp.",
+                    "Serve hot over steamed rice or noodles."
+                ],
+                tip: "Keep the heat high and keep stirring! The key to a great stir fry is quick cooking at high temperature."
+            },
+            {
+                title: "Creamy Tomato Pasta",
+                prepTime: "10 minutes",
+                cookTime: "20 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "400g pasta (penne or spaghetti)",
+                    "2 cans (800g) crushed tomatoes",
+                    "1 cup heavy cream",
+                    "1 onion, diced",
+                    "4 cloves garlic, minced",
+                    "1/4 cup fresh basil, chopped",
+                    "1/2 cup parmesan cheese, grated",
+                    "2 tbsp olive oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Cook pasta according to package directions, reserve 1 cup pasta water.",
+                    "In a large pan, heat olive oil and sauté onion until soft, about 5 minutes.",
+                    "Add garlic and cook for 1 minute until fragrant.",
+                    "Pour in crushed tomatoes, season with salt and pepper, simmer for 10 minutes.",
+                    "Stir in heavy cream and mix well until combined.",
+                    "Add cooked pasta to the sauce, toss to coat, adding pasta water if needed.",
+                    "Garnish with fresh basil and parmesan cheese before serving."
+                ],
+                tip: "Save some pasta water! The starchy water helps the sauce cling to the pasta perfectly."
+            },
+            {
+                title: "Honey Garlic Chicken",
+                prepTime: "10 minutes",
+                cookTime: "15 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "600g chicken breast, cubed",
+                    "1/3 cup honey",
+                    "1/4 cup soy sauce",
+                    "6 cloves garlic, minced",
+                    "1 tsp ginger, grated",
+                    "2 tbsp olive oil",
+                    "1 tbsp cornstarch",
+                    "2 tbsp water",
+                    "Sesame seeds for garnish"
+                ],
+                instructions: [
+                    "In a bowl, mix honey, soy sauce, garlic, and ginger to make the sauce.",
+                    "Heat olive oil in a large skillet over medium-high heat.",
+                    "Add chicken pieces and cook until golden brown, about 5-6 minutes.",
+                    "Pour the honey garlic sauce over the chicken and simmer for 3 minutes.",
+                    "Mix cornstarch with water and add to the pan to thicken the sauce.",
+                    "Cook for another 2 minutes until sauce is glossy and thick.",
+                    "Garnish with sesame seeds and serve with rice or vegetables."
+                ],
+                tip: "Don't overcook the chicken! Remove it from heat as soon as it's cooked through to keep it tender."
+            },
+            {
+                title: "Mediterranean Chickpea Salad",
+                prepTime: "15 minutes",
+                cookTime: "0 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "2 cans (800g) chickpeas, drained and rinsed",
+                    "2 cups cherry tomatoes, halved",
+                    "1 cucumber, diced",
+                    "1 red onion, finely chopped",
+                    "1 cup feta cheese, crumbled",
+                    "1/2 cup olives, sliced",
+                    "1/4 cup fresh parsley, chopped",
+                    "3 tbsp olive oil",
+                    "2 tbsp lemon juice",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "In a large bowl, combine chickpeas, tomatoes, cucumber, and onion.",
+                    "Add olives and crumbled feta cheese to the mixture.",
+                    "In a small bowl, whisk together olive oil, lemon juice, salt, and pepper.",
+                    "Pour dressing over the salad and toss gently to combine.",
+                    "Add fresh parsley and give it one final toss.",
+                    "Refrigerate for 30 minutes to let flavors meld together.",
+                    "Serve chilled as a main dish or side salad."
+                ],
+                tip: "This salad tastes even better the next day! Make it ahead for meal prep or picnics."
+            },
+            {
+                title: "Beef Tacos with Guacamole",
+                prepTime: "15 minutes",
+                cookTime: "15 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "500g ground beef",
+                    "8 taco shells",
+                    "2 avocados",
+                    "1 lime",
+                    "1 tomato, diced",
+                    "1/4 cup cilantro, chopped",
+                    "1 onion, diced",
+                    "2 cloves garlic, minced",
+                    "2 tbsp taco seasoning",
+                    "Shredded cheese and sour cream"
+                ],
+                instructions: [
+                    "Cook ground beef in a large pan over medium heat, breaking it up as it cooks.",
+                    "Add onion and garlic, cook until beef is browned, about 8 minutes.",
+                    "Stir in taco seasoning and 1/4 cup water, simmer for 5 minutes.",
+                    "For guacamole: mash avocados with lime juice, mix in diced tomato and cilantro.",
+                    "Warm taco shells according to package directions.",
+                    "Fill shells with beef mixture, top with guacamole, cheese, and sour cream.",
+                    "Serve immediately with your favorite toppings."
+                ],
+                tip: "Make the guacamole right before serving to keep the avocado from browning!"
+            },
+            {
+                title: "Lemon Herb Baked Salmon",
+                prepTime: "10 minutes",
+                cookTime: "15 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "4 salmon fillets (150g each)",
+                    "2 lemons",
+                    "4 cloves garlic, minced",
+                    "2 tbsp fresh dill, chopped",
+                    "2 tbsp olive oil",
+                    "1 tbsp butter",
+                    "Salt and pepper to taste",
+                    "Fresh parsley for garnish"
+                ],
+                instructions: [
+                    "Preheat oven to 200°C (400°F) and line a baking sheet with parchment paper.",
+                    "Place salmon fillets on the baking sheet, skin-side down.",
+                    "Mix olive oil, garlic, dill, juice from 1 lemon, salt, and pepper.",
+                    "Brush the mixture generously over each salmon fillet.",
+                    "Place thin lemon slices on top of each fillet and add a small pat of butter.",
+                    "Bake for 12-15 minutes until salmon flakes easily with a fork.",
+                    "Garnish with fresh parsley and serve with roasted vegetables."
+                ],
+                tip: "Don't overcook! Salmon is done when it's opaque and flakes easily but is still moist inside."
+            },
+            {
+                title: "Vegetable Fried Rice",
+                prepTime: "15 minutes",
+                cookTime: "10 minutes",
+                servings: "4 servings",
+                ingredients: [
+                    "4 cups cooked rice (day-old works best)",
+                    "2 eggs, beaten",
+                    "1 cup mixed vegetables (peas, corn, carrots)",
+                    "3 green onions, chopped",
+                    "3 cloves garlic, minced",
+                    "3 tbsp soy sauce",
+                    "2 tbsp sesame oil",
+                    "2 tbsp vegetable oil",
+                    "Salt and pepper to taste"
+                ],
+                instructions: [
+                    "Heat vegetable oil in a large wok or pan over high heat.",
+                    "Pour in beaten eggs and scramble quickly, then remove from pan.",
+                    "Add more oil, then garlic and mixed vegetables, stir fry for 2 minutes.",
+                    "Add the cooked rice, breaking up any clumps with your spatula.",
+                    "Add soy sauce and sesame oil, stir fry for 3-4 minutes.",
+                    "Return scrambled eggs to the pan, add green onions, and mix well.",
+                    "Cook for another minute, adjust seasoning, and serve hot."
+                ],
+                tip: "Use day-old rice! Fresh rice is too moist and will become mushy. Cold rice separates better for perfect fried rice."
+            }
+        ];
+
+        let currentDay = new Date().getDate() % recipes.length;
+
+        function displayRecipe(index) {
+            const recipe = recipes[index];
+            
+            document.getElementById('recipeTitle').textContent = recipe.title;
+            document.getElementById('prepTime').textContent = recipe.prepTime;
+            document.getElementById('cookTime').textContent = recipe.cookTime;
+            document.getElementById('servings').textContent = recipe.servings;
+
+            const ingredientsList = document.getElementById('ingredientsList');
+            ingredientsList.innerHTML = '';
+            recipe.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.textContent = ingredient;
+                ingredientsList.appendChild(li);
+            });
+
+            const instructionsList = document.getElementById('instructionsList');
+            instructionsList.innerHTML = '';
+            recipe.instructions.forEach((instruction, i) => {
+                const li = document.createElement('li');
+                li.setAttribute('data-step', i + 1);
+                li.textContent = instruction;
+                instructionsList.appendChild(li);
+            });
+
+            document.getElementById('tips').innerHTML = `<strong>💡 Chef's Tip:</strong> ${recipe.tip}`;
+        }
+
+        function updateDate() {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const today = new Date();
+            const dayName = days[today.getDay()];
+            const monthName = months[today.getMonth()];
+            const date = today.getDate();
+            const year = today.getFullYear();
+            
+            document.getElementById('currentDate').textContent = `${dayName}, ${monthName} ${date}, ${year} - Recipe #${currentDay + 1}`;
+        }
+
+        function nextRecipe() {
+            currentDay = (currentDay + 1) % recipes.length;
+            displayRecipe(currentDay);
+            updateDate();
+        }
+
+        function previousRecipe() {
+            currentDay = (currentDay - 1 + recipes.length) % recipes.length;
+            displayRecipe(currentDay);
+            updateDate();
+        }
+
+        displayRecipe(currentDay);
+        updateDate();
+    </script>
+</body>
+</html>
