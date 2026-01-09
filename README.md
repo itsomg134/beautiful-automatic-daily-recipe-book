@@ -163,12 +163,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
+Om Gedam
 
-Project Link: [https://github.com/yourusername/daily-recipe-book](https://github.com/yourusername/daily-recipe-book)
+GitHub: @itsomg134
 
----
+Email: omgedam123098@gmail.com
 
-⭐ **Star this repository if you found it helpful!** ⭐
+Twitter (X): @omgedam
 
-Made with 💚 and fresh ingredients
+LinkedIn: Om Gedam
+
+Portfolio: https://ogworks.lovable.app
